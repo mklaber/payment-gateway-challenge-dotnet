@@ -19,6 +19,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "reference", "reference", "{
 		docker-compose.yml = docker-compose.yml
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "specs", "specs", "{B150483A-3603-4A89-838F-4EBB62357833}"
+	ProjectSection(SolutionItems) = preProject
+		specs\payment-gateway-oas.yaml = specs\payment-gateway-oas.yaml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -40,5 +45,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{3CD9AAA2-2097-4874-9C40-FFDE26EE8E43} = {F36BD266-CD75-4438-9BF9-CD91CDB18F2B}
 		{3A92D8D6-0359-4752-91AE-D8A59622518A} = {1EF69307-274F-458E-BBE8-4D390512A8C6}
+		{B150483A-3603-4A89-838F-4EBB62357833} = {08E0B199-7B8F-483C-875B-A1BC7F127345}
 	EndGlobalSection
 EndGlobal

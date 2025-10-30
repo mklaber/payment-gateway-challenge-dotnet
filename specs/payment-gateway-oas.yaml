@@ -1,0 +1,62 @@
+openapi: 3.0.4
+info:
+  title: Payment Gateway API
+  version: v1.0.0.0
+paths:
+  '/api/Payments/{id}':
+    get:
+      tags:
+        - Payments
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/PostPaymentResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostPaymentResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/PostPaymentResponse'
+components:
+  schemas:
+    PaymentStatus:
+      enum:
+        - 0
+        - 1
+        - 2
+      type: integer
+      format: int32
+    PostPaymentResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        status:
+          $ref: '#/components/schemas/PaymentStatus'
+        cardNumberLastFour:
+          type: integer
+          format: int32
+        expiryMonth:
+          type: integer
+          format: int32
+        expiryYear:
+          type: integer
+          format: int32
+        currency:
+          type: string
+          nullable: true
+        amount:
+          type: integer
+          format: int32
+      additionalProperties: false
