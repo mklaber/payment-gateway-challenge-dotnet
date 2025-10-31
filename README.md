@@ -24,10 +24,28 @@ This is a summary of my understanding of the brief:
 
 ## Assumptions
 
-- We're going to define "previously made payment" as "previous attempt to make a payment, even if it was rejected, as long as the shape of the request could be de-serialized." We're doing this because the `PaymentStatus` enum includes a `Rejected` status (rather than depending on, say, HTTP status codes).
+- We're going to define "previously made payment" as "previous attempt to make a payment that was not rejected."
+- We won't persist or allow them to retrieve details of a rejected payment because those are client-side errors that the merchant should protect against. (They don't know that a payment will be declined, but they should know that they included a date in the past.)
 - Merchants will make structurally correct API requests that abide by the basic, initial API contract. That is to say, we do not need to deal with malformed JSON.
 - Our service is sitting behind an API Gateway which handles AuthN for us. All callers are authorized to call the endpoints.
 - A reasonable AuthZ restriction would be that you can only retrieve details of _your_ previously made payments. Given the data storage model for this exercise, we'll skip the AuthZ component as well.
+- "Ensure your submission validates against no more than 3 currency codes" means we support no more than three currencies (not the currency code should only have 3 characters)
+- A payment must be at least `1` minor currency units
+
+MAKE SURE TO MASK CC number on failure
+
+## Design
+
+The API contract really calls for the use of HTTP Status Codes to inform merchants of the success of payments. Traditionally, `Authorized` would likely map to `201: Created` and `Declined` might map to a `4xx` status. However, we have to consider whether "Declined" is the fault of the merchant at all (it's not, they don't know the customer has no funds). 
+
+
+- Validation layer
+- Data contracts separated from data models
+- Upfront complexity makes future growth easy
+- CQRS advantages like separate read & write, makes team coordination easier, etc. (see MS doc)
+- CQRS makes test coverage easier
+- Mapping makes things testable
+- data annotations and other swagger crap make it easier for merchants and encourages good documentation practices from the jump
 
 ## Pre-Requisites
 

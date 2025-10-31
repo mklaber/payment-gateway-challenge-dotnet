@@ -1,0 +1,152 @@
+openapi: 3.0.0
+info:
+  title: Bank Simulator
+  version: 1.0.0
+  description: |
+    Create a card payment authorization.
+servers:
+  - url: http://localhost:8080
+paths:
+  /payments:
+    post:
+      summary: Create a payment authorization
+      description: Authorizes a card payment for a specified amount and currency.
+      operationId: createPayment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentRequest'
+            examples:
+              sample:
+                summary: Example payment
+                value:
+                  card_number: "2222405343248877"
+                  expiry_date: "04/2025"
+                  currency: "GBP"
+                  amount: 100
+                  cvv: "123"
+      responses:
+        '201':
+          description: Payment authorized or declined result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentResponse'
+              examples:
+                authorized:
+                  summary: Authorized example
+                  value:
+                    authorized: true
+                    authorization_code: "0bb07405-6d44-4b50-a14f-7ae0beff13ad"
+                declined:
+                  summary: Declined example
+                  value:
+                    authorized: false
+                    authorization_code: null
+        '400':
+          description: Bad request – invalid or missing fields
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                validation:
+                  value:
+                    code: "validation_error"
+                    message: "expiry_date must be in MM/YYYY format."
+        '402':
+          description: Payment required – card declined or insufficient funds
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                declined:
+                  value:
+                    code: "card_declined"
+                    message: "The card was declined."
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                server_error:
+                  value:
+                    code: "server_error"
+                    message: "An unexpected error occurred."
+      tags:
+        - Payments
+components:
+  schemas:
+    PaymentRequest:
+      type: object
+      additionalProperties: false
+      required:
+        - card_number
+        - expiry_date
+        - currency
+        - amount
+        - cvv
+      properties:
+        card_number:
+          type: string
+          description: Primary Account Number (PAN) with no spaces.
+          pattern: '^[0-9]{12,19}$'
+          example: "2222405343248877"
+        expiry_date:
+          type: string
+          description: Expiry in MM/YYYY format.
+          pattern: '^(0[1-9]|1[0-2])\/\d{4}$'
+          example: "04/2025"
+        currency:
+          type: string
+          description: ISO 4217 currency code.
+          minLength: 3
+          maxLength: 3
+          example: "GBP"
+        amount:
+          type: integer
+          description: Minor units (e.g., pence for GBP). Use positive integers.
+          minimum: 1
+          example: 100
+        cvv:
+          type: string
+          description: Card security code.
+          pattern: '^[0-9]{3,4}$'
+          example: "123"
+    PaymentResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - authorized
+      properties:
+        authorized:
+          type: boolean
+          description: Whether the payment was authorized.
+          example: true
+        authorization_code:
+          type: string
+          nullable: true
+          description: Authorization identifier if approved; null otherwise.
+          format: uuid
+          example: "0bb07405-6d44-4b50-a14f-7ae0beff13ad"
+    Error:
+      type: object
+      additionalProperties: false
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+          example: "validation_error"
+        message:
+          type: string
+          example: "expiry_date must be in MM/YYYY format."
+tags:
+  - name: Payments
+    description: Card payment operations

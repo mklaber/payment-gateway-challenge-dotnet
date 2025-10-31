@@ -1,0 +1,44 @@
+### POST payments to bank -- success, 200
+POST http://localhost:8080/payments
+Content-Type: application/json
+
+{
+  "card_number": "2222405343248877",
+  "expiry_date": "04/2025",
+  "currency": "GBP",
+  "amount": 100,
+  "cvv": "123"
+}
+
+### POST payments to bank -- missing required fields, 400
+POST http://localhost:8080/payments
+Content-Type: application/json
+
+{
+  "card_number": "2222405343248877"
+}
+
+### POST payments to bank -- unauth, 200
+POST http://localhost:8080/payments
+Content-Type: application/json
+
+{
+  "card_number": "2222405343248872",
+  "expiry_date": "04/2025",
+  "currency": "GBP",
+  "amount": 100,
+  "cvv": "123"
+}
+
+### POST payments to bank -- 503
+POST http://localhost:8080/payments
+Content-Type: application/json
+
+{
+  "card_number": "2222405343248870",
+  "expiry_date": "04/2025",
+  "currency": "GBP",
+  "amount": 100,
+  "cvv": "123"
+}
+
