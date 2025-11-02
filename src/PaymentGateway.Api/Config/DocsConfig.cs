@@ -25,8 +25,10 @@ public static class DocsConfig
 
                                        No one likes it when an API returns an error. We do our best to describe what's happened.
                                        Generally speaking, errors in the `4xx` range should not be retried without a change
-                                       to the request (e.g., fix a validation error, reset the JWT token, etc.). Errors in
-                                       the `5xx` range should treated as transient; retrying after a short while (use of an
+                                       to the request (e.g., fix a validation error, reset the JWT token, etc.). The exception
+                                       to this is when `isTransient` is included in the error response. Endpoints that make
+                                       use of this status have additional information available.
+                                       Errors in the `5xx` range can be treated as transient; retrying after a short while (use of an
                                        exponential backoff strategy is recommended) should resolve the issue.
 
                                        Unfortunately, because we rely on some external systems, we can't be certain a retry

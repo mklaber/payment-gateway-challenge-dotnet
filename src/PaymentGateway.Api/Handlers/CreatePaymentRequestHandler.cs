@@ -1,3 +1,5 @@
+using FluentResults;
+
 using FluentValidation;
 
 using MapsterMapper;
@@ -6,6 +8,7 @@ using MediatR;
 
 using PaymentGateway.Api.Clients.Mountebank;
 using PaymentGateway.Api.Contracts;
+using PaymentGateway.Api.Results;
 using PaymentGateway.Core.Commands;
 using PaymentGateway.Core.Models;
 
@@ -15,27 +18,32 @@ public class CreatePaymentRequestHandler(
     IValidator<CreatePaymentRequest> createPaymentValidator,
     IMapper mapper,
     IMediator mediator,
-    IMountebankClient client) : IRequestHandler<CreatePaymentRequest, SuccessOrFailure<PaymentDto>>
+    IMountebankClient client) : IRequestHandler<CreatePaymentRequest, Result<PaymentDto>>
 {
-    public async Task<SuccessOrFailure<PaymentDto>> Handle(CreatePaymentRequest request,
+    public async Task<Result<PaymentDto>> Handle(CreatePaymentRequest request,
         CancellationToken cancellationToken)
     {
         // NB: this belongs in an open behaviour
         var validationResult = await createPaymentValidator.ValidateAsync(request, cancellationToken);
         if (!validationResult.IsValid)
         {
-            return new(null, validationResult.ToDictionary());
+            return Result.Fail(new ValidationError(validationResult));
         }
 
         var createPaymentReq = mapper.Map<PaymentRequestExternalDto>(request);
-        // this will throw... do we want to catch and be more precise?
+
         var response = await client.CreatePaymentAsync(createPaymentReq, cancellationToken);
-        var payment = mapper.Map<Payment>((request, response));
+        if (response.IsFailed)
+        {
+            return response.ToResult<PaymentDto>();
+        }
+
+        var payment = mapper.Map<Payment>((request, response.Value));
 
         await mediator.Send(new AddPaymentRequest(payment), cancellationToken);
 
         var dto = mapper.Map<PaymentDto>(payment);
 
-        return new SuccessOrFailure<PaymentDto>(dto);
+        return Result.Ok(dto);
     }
 }

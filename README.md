@@ -98,6 +98,24 @@ Click the **Authorize** button and paste in the `acme-merchant` token you genera
 [lh-swag]: https://localhost:7092/swagger/
 [^gas]: Who even reads footnotes? You do! See [English Language & Usage](https://english.stackexchange.com/a/100588).
 
-## Documentation
+## Tests
+
+This solution offers three types of tests:
+
+* **Unit Tests** – for the [Api](test/PaymentGateway.Api.Tests) and for [Core](test/PaymentGateway.Core.Tests)
+* **Integration Tests** – for the [Api](test/PaymentGateway.Api.IntegrationTests) (see README)
+* **Smoke Tests** – for the [Api](test/PaymentGateway.Api.IntegrationTests), found and described in the Integration Test project
+
+To run the Unit and Integration tests:
+
+```bash
+dotnet test
+```
+
+As of this writing, test coverage of this solution is 100%.
+
+To run the Smoke Tests, see the README in the [Integration Tests](test/PaymentGateway.Api.IntegrationTests) project.
+
+## Client / Merchant Documentation
 
 Thorough client (Merchant) documentation is available at `/redoc` and the (uglier) `/swagger`. You'll need to start the app in `Development` (default) mode.

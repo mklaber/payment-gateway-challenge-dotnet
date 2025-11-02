@@ -56,7 +56,6 @@ builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 builder.Services.AddHttpClient<IMountebankClient, MountebankClient>(client =>
 {
     client.BaseAddress = new Uri(builder.Configuration["Mountebank:BaseAddress"]!);
-    // TODO: add resilience but only retry connection errors
 });
 
 builder.Services.RegisterMappings();

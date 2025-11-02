@@ -23,10 +23,7 @@ public class ProcessPaymentTests
         _testOutputHelper = testOutputHelper;
         _client = factory.WithWebHostBuilder(b =>
         {
-            b.ConfigureTestServices(s =>
-            {
-                TestAuthHandler.ConfigureTestServices(s);
-            });
+            b.ConfigureTestServices(TestAuthHandler.ConfigureTestServices);
         }).CreateClient();
         TestAuthHandler.ConfigureHttpClient(_client);
     }
@@ -49,18 +46,21 @@ public class ProcessPaymentTests
         HttpResponseMessage response = await _client.PostAsJsonAsync("/payments", payment);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
+        response.StatusCode.Should().Be(HttpStatusCode.FailedDependency);
         string raw = await response.Content.ReadAsStringAsync();
         _testOutputHelper.WriteLine(raw);
         raw.Should().NotContain(payment.CardNumber, "do not leak card number");
         ProblemDetails? paymentFailure =
             await response.Content.ReadFromJsonAsync<ProblemDetails>(JsonHelpers.StandardOptions);
         paymentFailure.Should().NotBeNull();
+        paymentFailure.Extensions.TryGetValue("isTransient", out object? _).Should().BeTrue();
+        // we're not gonna test the value of it, just that it was included (the value is a JsonElement ValueType)
+        // isTransient.Should().BeOfType<bool>().Which.Should().BeTrue();
     }
 
     /// <summary>
-    ///     We do not need to test every validation failure possibility; in this integration test all we're doing is
-    ///     confirming that validators are wired up correctly and returning what we expect them to return.
+    /// We do not need to test every validation failure possibility; in this integration test all we're doing is
+    /// confirming that validators are wired up correctly and returning what we expect them to return.
     /// </summary>
     [Fact]
     public async Task Create_Payment_Rejects()

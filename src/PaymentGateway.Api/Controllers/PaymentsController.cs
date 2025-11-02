@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 using PaymentGateway.Api.Contracts;
+using PaymentGateway.Api.Results;
 
 namespace PaymentGateway.Api.Controllers;
 
@@ -50,6 +51,7 @@ public class PaymentsController(IMediator mediator) : Controller
     /// request are provided in the `errors` property. These attempt to be as specific as possible about the underlying
     /// issues with the request. Requests of this type should not be retried without modifications to the request.</response>
     /// <response code="400">No request body was provided.</response>
+    /// <response code="424">An error with one of the services we depend on. Look for `isTransient` in the response to see if you should retry.</response>
     /// <remarks>
     /// This API provides Merchants the ability to attempt to take money from customers.
     ///
@@ -83,6 +85,18 @@ public class PaymentsController(IMediator mediator) : Controller
     ///     }
     ///
     /// If your HTTP Client automatically follows redirects, it'll make a subsequent call to the `GET` endpoint.
+    ///
+    /// If there's an error upstream of our API (e.g., the bank), the status code will be `424` and the response will
+    /// look like this:
+    ///
+    ///     {
+    ///         "title": "PaymentGatewayApi::BankError",
+    ///         "status": 424,
+    ///         "traceId": "00-ad1a86fe0c94c728843acc2993722a2e-d6748a4d947799fb-00",
+    ///         "isTransient": true
+    ///     }
+    ///
+    /// If `isTransient` is `true`, we believe it may be safe to retry your request after some time.
     /// </remarks>
     [HttpPost(Name = nameof(CreatePayment))]
     [ProducesResponseType<PaymentDto>(StatusCodes.Status201Created)]
@@ -90,15 +104,25 @@ public class PaymentsController(IMediator mediator) : Controller
         MediaTypeNames.Application.ProblemJson)]
     [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest,
         MediaTypeNames.Application.ProblemJson)]
+    [ProducesResponseType(StatusCodes.Status424FailedDependency)]
     public async Task<IActionResult> CreatePayment(CreatePaymentRequest paymentRequest)
     {
         var paymentResult = await mediator.Send(paymentRequest);
-        if (paymentResult.Failures is not null)
+        if (paymentResult.IsFailed && paymentResult.HasError<ValidationError>())
         {
-            return UnprocessableEntity(new ValidationProblemDetails(paymentResult.Failures));
+            // there's probably a better way to get this but... time.
+            var validationError = (ValidationError)paymentResult.Errors.First();
+            return UnprocessableEntity(new ValidationProblemDetails(validationError.ValidationResult.ToDictionary()));
         }
 
-        return CreatedAtRoute(nameof(GetPaymentById), new { paymentId = paymentResult.Success!.PaymentId },
-            paymentResult.Success);
+        if (paymentResult.IsFailed && paymentResult.HasError<BankError>())
+        {
+            var bankError = (BankError)paymentResult.Errors.First();
+            return Problem(title: bankError.Message, statusCode: StatusCodes.Status424FailedDependency,
+                extensions: new Dictionary<string, object?>() { ["isTransient"] = bankError.IsTransient, });
+        }
+
+        return CreatedAtRoute(nameof(GetPaymentById), new { paymentId = paymentResult.Value.PaymentId },
+            paymentResult.Value);
     }
 }

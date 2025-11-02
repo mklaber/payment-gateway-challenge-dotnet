@@ -1,7 +1,9 @@
+using FluentResults;
+
 namespace PaymentGateway.Api.Clients.Mountebank;
 
 public interface IMountebankClient
 {
-    Task<PaymentResponseExternalDto> CreatePaymentAsync(PaymentRequestExternalDto paymentRequestDto,
+    Task<Result<PaymentResponseExternalDto>> CreatePaymentAsync(PaymentRequestExternalDto paymentRequestDto,
         CancellationToken cancellationToken);
 }

@@ -1,9 +1,16 @@
+using System.Net;
+
+using FluentResults;
+
+using FluentValidation.Results;
+
 using MediatR;
 
 using Microsoft.AspNetCore.Mvc;
 
 using PaymentGateway.Api.Contracts;
 using PaymentGateway.Api.Controllers;
+using PaymentGateway.Api.Results;
 
 namespace PaymentGateway.Api.Tests.Controllers;
 
@@ -62,7 +69,7 @@ public class PaymentsControllerTests
         // Arrange
         var request = new CreatePaymentRequest();
         var payment = new PaymentDto { PaymentId = Guid.NewGuid() };
-        var result = new SuccessOrFailure<PaymentDto>(payment);
+        var result = Result.Ok(payment);
 
         _mediator.Send(request, Arg.Any<CancellationToken>()).Returns(result);
 
@@ -72,19 +79,44 @@ public class PaymentsControllerTests
         // Assert
         var createdResult = actionResult.Should().BeOfType<CreatedAtRouteResult>().Subject;
         createdResult.RouteName.Should().Be(nameof(PaymentsController.GetPaymentById));
-        createdResult.RouteValues!["id"].Should().Be(payment.PaymentId);
+        createdResult.RouteValues!["paymentId"].Should().Be(payment.PaymentId);
         createdResult.Value.Should().Be(payment);
 
         await _mediator.Received(1).Send(request, Arg.Any<CancellationToken>());
     }
 
     [Fact]
+    public async Task CreatePayment_WhenBankError_ReturnsProblemDetails()
+    {
+        // Arrange
+        var request = new CreatePaymentRequest();
+        var bankError = new BankError(isTransient: true);
+        var result = Result.Fail(bankError);
+
+        _mediator.Send(request, Arg.Any<CancellationToken>()).Returns(result);
+
+        // Act
+        var actionResult = await _sut.CreatePayment(request);
+
+        // Assert
+        var objectResult = actionResult.Should().BeOfType<ObjectResult>().Subject;
+        objectResult.StatusCode.Should().Be((int)HttpStatusCode.FailedDependency);
+
+        var problemDetails = objectResult.Value.Should().BeOfType<ProblemDetails>().Subject;
+        problemDetails.Title.Should().Be("PaymentGatewayApi::BankError");
+        problemDetails.Extensions["isTransient"].Should().Be(true);
+
+        await _mediator.Received(1).Send(request, Arg.Any<CancellationToken>());
+    }
+
+
+    [Fact]
     public async Task CreatePayment_WhenInvalid_ReturnsUnprocessableEntity()
     {
         // Arrange
         var request = new CreatePaymentRequest();
-        var failures = new Dictionary<string, string[]> { { "PropertyName", new[] { "Error message" } } };
-        var result = new SuccessOrFailure<PaymentDto>(null, failures);
+        var validationFailure = new ValidationResult([new ValidationFailure("PropertyName", "Error message")]);
+        var result = Result.Fail(new ValidationError(validationFailure));
 
         _mediator.Send(request, Arg.Any<CancellationToken>()).Returns(result);
 

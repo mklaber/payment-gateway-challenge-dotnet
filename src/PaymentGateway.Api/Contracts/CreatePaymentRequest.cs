@@ -1,16 +1,12 @@
 using System.ComponentModel.DataAnnotations;
 
+using FluentResults;
+
 using MediatR;
 
 namespace PaymentGateway.Api.Contracts;
 
-/// <summary>
-/// Service result response that wraps validation errors and successes.
-/// </summary>
-/// <remarks>Given more time, we'd catch validation exceptions and add a .NET filter</remarks>
-public record SuccessOrFailure<T>(T? Success, IDictionary<string, string[]>? Failures = null);
-
-public class CreatePaymentRequest : IRequest<SuccessOrFailure<PaymentDto>>
+public class CreatePaymentRequest : IRequest<Result<PaymentDto>>
 {
     /// <summary>
     /// Credit Card number containing 14 to 19 numeric characters only
