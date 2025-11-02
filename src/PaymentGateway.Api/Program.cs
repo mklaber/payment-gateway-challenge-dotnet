@@ -1,13 +1,14 @@
-using System.Reflection;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
 
 using FluentValidation;
 
-using Mapster;
-
 using PaymentGateway.Api.Clients.Mountebank;
 using PaymentGateway.Api.Config;
+using PaymentGateway.Api.Filters;
+using PaymentGateway.Api.Identity;
 using PaymentGateway.Core.Commands;
+using PaymentGateway.Core.Identity;
 using PaymentGateway.Core.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -18,8 +19,23 @@ var builder = WebApplication.CreateBuilder(args);
 ValidatorOptions.Global.DisplayNameResolver = (type, memberInfo, expression) =>
     ValidatorOptions.Global.PropertyNameResolver(type, memberInfo, expression);
 
+builder.Services.AddAuthorization();
+builder.Services.AddAuthentication("Bearer").AddJwtBearer();
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddTransient<IMerchant, BearerMerchant>();
+builder.Services.AddSingleton<Func<IMerchant>>((st) =>
+{
+    // ReSharper disable once ConvertClosureToMethodGroup
+    return () => st.GetRequiredService<IMerchant>();
+});
+builder.Services.AddSingleton<IPaymentsRepository, PaymentsRepository>();
 
-builder.Services.AddControllers()
+builder.Services.AddControllers(opts =>
+    {
+        // this exists because we value 1) great developer docs, and 2) really clear validation responses
+        // see comment below about data annotations.
+        opts.Filters.Add<RequireBodyFilter>();
+    })
     .AddJsonOptions(static options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()))
     // You may have noticed we've used a bunch of data annotation attributes (e.g., [Required]) on our API contracts
     // These attributes are great for informing the OpenAPI / Swagger generator how to describe the schema, but
@@ -28,21 +44,13 @@ builder.Services.AddControllers()
     .ConfigureApiBehaviorOptions(static options => options.SuppressModelStateInvalidFilter = true);
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(static options =>
-{
-    var assName = Assembly.GetExecutingAssembly().GetName();
-    options.SwaggerDoc("v1", new() { Title = "Payment Gateway API", Version = $"v{assName.Version}" });
-    var xmlFilename = $"{assName.Name}.xml";
-    options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
-
-});
+builder.Services.AddApiDocServices();
 
 builder.Services.AddMediatR(cfg =>
 {
     cfg.RegisterServicesFromAssemblyContaining<Program>();
     cfg.RegisterServicesFromAssemblyContaining<AddPaymentRequestHandler>();
 });
-
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 
 builder.Services.AddHttpClient<IMountebankClient, MountebankClient>(client =>
@@ -52,9 +60,9 @@ builder.Services.AddHttpClient<IMountebankClient, MountebankClient>(client =>
 });
 
 builder.Services.RegisterMappings();
-builder.Services.AddSingleton<IPaymentsRepository, PaymentsRepository>();
 
 builder.Services.AddProblemDetails();
+
 
 var app = builder.Build();
 
@@ -62,16 +70,19 @@ app.UseExceptionHandler();
 
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseApiDocs();
+    app.UseDeveloperExceptionPage();
 }
 
 app.UseHttpsRedirection();
 
-// app.UseAuthorization();
+app.UseAuthorization();
 
 app.MapControllers();
 
 app.Run();
 
-public partial class Program { }
+[ExcludeFromCodeCoverage]
+public partial class Program
+{
+}

@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
@@ -8,6 +8,7 @@
     <!-- Generate a docs file to make our swagger that much better: -->
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <NoWarn>$(NoWarn);1591;1573</NoWarn>
+    <UserSecretsId>1c1af9d1-3353-422c-9f2b-9f70352609e2</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -16,15 +17,11 @@
     <PackageReference Include="Mapster" Version="7.4.0" />
     <PackageReference Include="Mapster.DependencyInjection" Version="1.0.1" />
     <PackageReference Include="MediatR" Version="12.5.0" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="9.0.6" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.10" />
+    <PackageReference Include="NSwag.AspNetCore" Version="14.6.1" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\PaymentGateway.Core\PaymentGateway.Core.csproj" />
   </ItemGroup>
-    
-  <Target Name="CreateSwaggerJson" AfterTargets="Build" Condition="$(Configuration)=='Debug'">
-    <Exec Command="dotnet swagger tofile --yaml --output ../../specs/payment-gateway-oas.yaml $(OutputPath)$(AssemblyName).dll v1" WorkingDirectory="$(ProjectDir)" />
-  </Target>
-
 </Project>

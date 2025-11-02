@@ -8,7 +8,6 @@ using PaymentGateway.Api.Clients.Mountebank;
 using PaymentGateway.Api.Contracts;
 using PaymentGateway.Core.Commands;
 using PaymentGateway.Core.Models;
-using PaymentGateway.Core.Repositories;
 
 namespace PaymentGateway.Api.Handlers;
 
@@ -18,7 +17,6 @@ public class CreatePaymentRequestHandler(
     IMediator mediator,
     IMountebankClient client) : IRequestHandler<CreatePaymentRequest, SuccessOrFailure<PaymentDto>>
 {
-
     public async Task<SuccessOrFailure<PaymentDto>> Handle(CreatePaymentRequest request,
         CancellationToken cancellationToken)
     {
@@ -33,11 +31,11 @@ public class CreatePaymentRequestHandler(
         // this will throw... do we want to catch and be more precise?
         var response = await client.CreatePaymentAsync(createPaymentReq, cancellationToken);
         var payment = mapper.Map<Payment>((request, response));
-        
+
         await mediator.Send(new AddPaymentRequest(payment), cancellationToken);
-        
+
         var dto = mapper.Map<PaymentDto>(payment);
-        
+
         return new SuccessOrFailure<PaymentDto>(dto);
     }
 }

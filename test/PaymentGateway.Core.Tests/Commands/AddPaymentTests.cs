@@ -14,10 +14,10 @@ public class AddPaymentTests
         var request = new AddPaymentRequest(pay);
         var repo = Substitute.For<IPaymentsRepository>();
         var sut = new AddPaymentRequestHandler(repo);
-        
+
         // Act
         var result = await sut.Handle(request, CancellationToken.None);
-        
+
         // Assert
         result.Should().BeTrue();
         repo.Received(1).Add(Arg.Is<Payment>(x => x.PaymentId == pay.PaymentId));

@@ -13,12 +13,13 @@ public static class ExpiryExtensions
             expiryDate = DateOnly.MinValue;
             return false;
         }
+
         try
         {
             expiryDate = ToExpiryDate(year!.Value, month!.Value);
             return true;
         }
-        catch (ArgumentOutOfRangeException e)
+        catch (ArgumentOutOfRangeException)
         {
             expiryDate = DateOnly.MinValue;
             return false;
@@ -32,5 +33,4 @@ public static class ExpiryExtensions
         ToExpiryDate(request.ExpiryYear!.Value, request.ExpiryMonth!.Value);
 
     public static DateOnly ToExpiryDate(this DateTime date) => ToExpiryDate(date.Year, date.Month);
-    
 }

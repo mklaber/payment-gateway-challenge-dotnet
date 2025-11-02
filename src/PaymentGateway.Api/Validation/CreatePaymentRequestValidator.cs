@@ -26,7 +26,7 @@ public class CreatePaymentRequestValidator : AbstractValidator<CreatePaymentRequ
         RuleFor(c => c.ExpiryMonth)
             .NotEmpty()
             .InclusiveBetween(1, 12);
-        
+
         RuleFor(c => c.ExpiryYear)
             // ExpiryYear being a valid, future, year is handled in a custom rule below
             .NotEmpty();
@@ -43,7 +43,7 @@ public class CreatePaymentRequestValidator : AbstractValidator<CreatePaymentRequ
 
         RuleFor(c => c.Currency)
             .NotEmpty();
-        
+
         RuleFor(c => c.Currency)
             .Must(curr => SupportedCurrencies.Contains(curr))
             .WithMessage(
@@ -60,7 +60,4 @@ public class CreatePaymentRequestValidator : AbstractValidator<CreatePaymentRequ
             .MaximumLength(4)
             .NumericOnly();
     }
-
-
-
 }

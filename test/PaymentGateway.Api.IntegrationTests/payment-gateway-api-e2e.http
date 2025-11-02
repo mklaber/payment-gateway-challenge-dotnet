@@ -1,0 +1,75 @@
+### POST Create Authorized Payment
+
+POST https://localhost:7092/payments
+accept: application/json
+Authorization: Bearer {{merchant-1-token}}
+Content-Type: application/json
+
+{
+  "cardNumber": "4111111111111111",
+  "expiryMonth": 12,
+  "expiryYear": 2027,
+  "currency": "EUR",
+  "amount": 1123,
+  "cvv": "123"
+}
+
+
+> {%
+    client.test("Request executed successfully", function () {
+        client.assert(response.status === 201, "Response status is not 201");
+    });
+
+    client.test("Response content-type is json", function () {
+        const type = response.contentType.mimeType;
+        client.assert(type === "application/json", `Expected 'application/json' but received '${type}'`);
+    });
+
+    client.test("Payment Id is set in body and Location", function () {
+        const paymentId = response.body.paymentId;
+        client.assert(paymentId != null, "Expected a PaymentId to be set");
+        const locationHeader = response.headers.valueOf("location");
+        client.assert(locationHeader != null, "Expected Location header to be set");
+        const locationPaymentId = locationHeader.split('/').pop();
+        client.assert(paymentId == locationPaymentId, `Expected paymentId body '${paymentId}' to match Location header '${locationPaymentId}'`);
+    });
+
+    client.test("Last 4 matches", function () {
+        const last4 = response.body.cardNumberLastFour;
+        client.assert(last4 == 1111, `Expected last 4 of 1111, but received ${last4}`);
+    });
+    
+    client.global.set("latest-payment-id", response.body.paymentId);
+%}
+
+
+### GET Payment
+< {%
+    request.variables.set("payment-id", client.global.get("latest-payment-id"))
+%}
+
+GET https://localhost:7092/payments/{{payment-id}}
+accept: application/json
+Authorization: Bearer {{merchant-1-token}}
+
+> {%
+    client.test("Request executed successfully", function () {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+
+    client.test("Response content-type is json", function () {
+        const type = response.contentType.mimeType;
+        client.assert(type === "application/json", `Expected 'application/json' but received '${type}'`);
+    });
+
+    client.test("Payment Id matches", function () {
+        client.assert(response.body.paymentId == request.variables.get('payment-id'), "Cannot find 'headers' option in response");
+    });
+
+    client.test("Last 4 matches", function () {
+        const last4 = response.body.cardNumberLastFour;
+        client.assert(last4 == 1111, `Expected last 4 of 1111, but received ${last4}`);
+    });
+%}
+
+

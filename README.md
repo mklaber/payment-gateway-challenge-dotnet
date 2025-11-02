@@ -47,10 +47,18 @@ The API contract really calls for the use of HTTP Status Codes to inform merchan
 - Mapping makes things testable
 - data annotations and other swagger crap make it easier for merchants and encourages good documentation practices from the jump
 
+### Auth - WIP
+
+user-jwts: https://auth0.com/blog/test-authorization-in-aspnet-core-webapi-with-user-jwts-tool/
+and: https://learn.microsoft.com/en-us/aspnet/core/security/authentication/jwt-authn?view=aspnetcore-9.0&tabs=linux
+
+
+
 ## Pre-Requisites
 
 * [.NET 9.0][net9]
 * Docker
+* A JWT token
 
 This project was provided with a bank simulator. Start it before running the app and tests:
 
@@ -60,13 +68,36 @@ docker compose up
 
 You can verify the simulator is running by navigating to [http://localhost:2525/][sim-lh] in your browser.
 
-If you're trying to build and run, you may need to restore .NET tools:
+This project simulates a proper authentication and identity provider by using basic JWTs provided by [`dotnet user-jwts`][user-jwts]. (Further discussion of this decision is provided in the Design documentation.) You'll need to create at least one token in order to make local requests and run [Smoke Tests][smoke-t].
 
 ```bash
-dotnet tool restore
+dotnet user-jwts create --project src/PaymentGateway.Api/PaymentGateway.Api.csproj --output token --name acme-merchant
 ```
 
-
+Copy the output of this command and save it for later. (If you forget to write this down, you can retrieve it again using the `list` and `print` commands.)
 
 [net9]: https://dotnet.microsoft.com/en-us/download/dotnet/9.0
 [sim-lh]: http://localhost:2525/
+[user-jwts]: https://learn.microsoft.com/en-us/aspnet/core/security/authentication/jwt-authn?view=aspnetcore-9.0&tabs=linux
+[smoke-t]: test/PaymentGateway.Api.IntegrationTests/README.md
+
+## Running
+
+You can run the app in your favourite IDE; the `PaymentGateway.Api.Swagger` Launch Profile is recommended for IDE users.
+
+Alternatively, start it from the command line:
+
+```bash
+dotnet run --launch-profile PaymentGateway.Api --project src/PaymentGateway.Api/PaymentGateway.Api.csproj
+```
+
+And then navigate to [https://localhost:7092/swagger/][lh-swag]
+
+Click the **Authorize** button and paste in the `acme-merchant` token you generated earlier. You are now, as we say, cooking with gas[^gas].
+
+[lh-swag]: https://localhost:7092/swagger/
+[^gas]: Who even reads footnotes? You do! See [English Language & Usage](https://english.stackexchange.com/a/100588).
+
+## Documentation
+
+Thorough client (Merchant) documentation is available at `/redoc` and the (uglier) `/swagger`. You'll need to start the app in `Development` (default) mode.

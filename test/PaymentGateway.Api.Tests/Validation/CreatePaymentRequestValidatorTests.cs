@@ -14,10 +14,10 @@ public class CreatePaymentRequestValidatorTests
     {
         // Arrange
         var request = CreateValidRequest();
-        
+
         // Act
         var result = _sut.TestValidate(request);
-        
+
         // Assert
         result.ShouldNotHaveAnyValidationErrors();
     }
@@ -27,7 +27,7 @@ public class CreatePaymentRequestValidatorTests
     {
         // Arrange
         var request = new CreatePaymentRequest();
-        
+
         // Act
         var result = _sut.TestValidate(request);
 
@@ -50,16 +50,14 @@ public class CreatePaymentRequestValidatorTests
         result.ShouldHaveValidationErrorFor(c => c.Cvv).MatchedFailures.Should()
             .ContainSingle(f => f.PropertyName == nameof(CreatePaymentRequest.Cvv)).Which.ErrorCode.Should()
             .Be("NotEmptyValidator", "we need to verify that this is _why_ it is failing");
-
-
     }
-    
+
     [Theory]
     [InlineData(null)] // not empty
     [InlineData("")] // not empty
-    [InlineData("123")]  // Too short
+    [InlineData("123")] // Too short
     [InlineData("12345678901234567890")] // Too long
-    [InlineData("4abcd11111111111")]  // Non-numeric
+    [InlineData("4abcd11111111111")] // Non-numeric
     public void CardNumber_ShouldBeInvalid_WhenNotMatchingRules(string? cardNumber)
     {
         // Arrange
@@ -101,7 +99,7 @@ public class CreatePaymentRequestValidatorTests
         var badExpiryValidation = result.ShouldHaveValidationErrors().MatchedFailures.Should().ContainSingle().Which;
         badExpiryValidation.ErrorMessage.Should().Be("Expiry date and month must be in the future.");
     }
-    
+
     [Fact]
     public void ExpiryDate_ShouldBeInvalid_WhenInPast()
     {
@@ -131,7 +129,8 @@ public class CreatePaymentRequestValidatorTests
         // Assert
         var currencyFailure = result.ShouldHaveValidationErrorFor(x => x.Currency).MatchedFailures.Should()
             .ContainSingle().Which;
-        currencyFailure.ErrorMessage.Should().Be($"'{currency}' is not a supported currency. It must be one of: CHF, EUR, GBP");
+        currencyFailure.ErrorMessage.Should()
+            .Be($"'{currency}' is not a supported currency. It must be one of: CHF, EUR, GBP");
     }
 
     [Theory]
@@ -151,9 +150,9 @@ public class CreatePaymentRequestValidatorTests
 
     [Theory]
     [InlineData("")]
-    [InlineData("12")]  // Too short
-    [InlineData("12345")]  // Too long
-    [InlineData("12a")]  // Non-numeric
+    [InlineData("12")] // Too short
+    [InlineData("12345")] // Too long
+    [InlineData("12a")] // Non-numeric
     public void Cvv_ShouldBeInvalid_WhenNotMatchingRules(string cvv)
     {
         // Arrange
@@ -166,7 +165,9 @@ public class CreatePaymentRequestValidatorTests
         result.ShouldHaveValidationErrorFor(x => x.Cvv);
     }
 
-    private static CreatePaymentRequest CreateValidRequest(string? cardNumber = "4111111111111111", int? expiryMonth = 2, int? expiryYear = 2050, string? currency = "EUR", int? amount = 10050, string? cvv = "123") => new()
+    private static CreatePaymentRequest CreateValidRequest(string? cardNumber = "4111111111111111",
+        int? expiryMonth = 2, int? expiryYear = 2050, string? currency = "EUR", int? amount = 10050,
+        string? cvv = "123") => new()
     {
         CardNumber = cardNumber,
         ExpiryMonth = expiryMonth,

@@ -21,7 +21,7 @@ public class GetPaymentRequestHandlerTests
         _mapper = Substitute.For<IMapper>();
         _sut = new GetPaymentRequestHandler(_mediator, _mapper);
     }
-    
+
     [Fact]
     public async Task Handle_WhenPaymentExists_ReturnsPaymentDto()
     {
@@ -43,7 +43,8 @@ public class GetPaymentRequestHandlerTests
         result.Should().NotBeNull();
         result.Should().Be(paymentDto);
 
-        await _mediator.Received(1).Send(Arg.Is<GetPaymentByIdRequest>(r => r.PaymentId == paymentId), Arg.Any<CancellationToken>());
+        await _mediator.Received(1).Send(Arg.Is<GetPaymentByIdRequest>(r => r.PaymentId == paymentId),
+            Arg.Any<CancellationToken>());
         _mapper.Received(1).Map<PaymentDto>(payment);
     }
 
@@ -63,7 +64,8 @@ public class GetPaymentRequestHandlerTests
         // Assert
         result.Should().BeNull();
 
-        await _mediator.Received(1).Send(Arg.Is<GetPaymentByIdRequest>(r => r.PaymentId == paymentId), Arg.Any<CancellationToken>());
+        await _mediator.Received(1).Send(Arg.Is<GetPaymentByIdRequest>(r => r.PaymentId == paymentId),
+            Arg.Any<CancellationToken>());
         _mapper.DidNotReceive().Map<PaymentDto>(Arg.Any<Payment>());
     }
 }

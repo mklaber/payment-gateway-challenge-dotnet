@@ -6,7 +6,6 @@ namespace PaymentGateway.Api.Tests.Clients.Mountebank;
 
 public class MountebankClientTests
 {
-
     [Theory]
     [InlineData(false, "", "even if it is not authorized it is still a successful call")]
     [InlineData(true, "any-old-auth-code-1234", "authorized calls are the golden path")]
@@ -68,7 +67,6 @@ public class MountebankClientTests
         var actualRequestBody = await actualRequest.Content!.ReadAsStringAsync();
         actualRequestBody.Should()
             .BeEquivalentTo(expectedRequestJson, o => o.IgnoringLeadingWhitespace().IgnoringNewlineStyle());
-
     }
 
     [Fact]
@@ -96,7 +94,6 @@ public class MountebankClientTests
 
         // Assert
         await act.Should().ThrowAsync<HttpRequestException>();
-
     }
 
     /// <summary>

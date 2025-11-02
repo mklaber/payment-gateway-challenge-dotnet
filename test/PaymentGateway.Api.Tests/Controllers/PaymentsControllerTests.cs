@@ -35,7 +35,8 @@ public class PaymentsControllerTests
         var returnedPayment = okResult.Value.Should().BeOfType<PaymentDto>().Subject;
         returnedPayment.Should().Be(paymentDto);
 
-        await _mediator.Received(1).Send(Arg.Is<GetPaymentRequest>(r => r.PaymentId == paymentId), Arg.Any<CancellationToken>());
+        await _mediator.Received(1).Send(Arg.Is<GetPaymentRequest>(r => r.PaymentId == paymentId),
+            Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -51,7 +52,8 @@ public class PaymentsControllerTests
 
         // Assert
         result.Result.Should().BeOfType<NotFoundResult>();
-        await _mediator.Received(1).Send(Arg.Is<GetPaymentRequest>(r => r.PaymentId == paymentId), Arg.Any<CancellationToken>());
+        await _mediator.Received(1).Send(Arg.Is<GetPaymentRequest>(r => r.PaymentId == paymentId),
+            Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -61,7 +63,7 @@ public class PaymentsControllerTests
         var request = new CreatePaymentRequest();
         var payment = new PaymentDto { PaymentId = Guid.NewGuid() };
         var result = new SuccessOrFailure<PaymentDto>(payment);
-        
+
         _mediator.Send(request, Arg.Any<CancellationToken>()).Returns(result);
 
         // Act
@@ -81,12 +83,9 @@ public class PaymentsControllerTests
     {
         // Arrange
         var request = new CreatePaymentRequest();
-        var failures = new Dictionary<string, string[]>
-        {
-            { "PropertyName", new[] { "Error message" } }
-        };
+        var failures = new Dictionary<string, string[]> { { "PropertyName", new[] { "Error message" } } };
         var result = new SuccessOrFailure<PaymentDto>(null, failures);
-        
+
         _mediator.Send(request, Arg.Any<CancellationToken>()).Returns(result);
 
         // Act

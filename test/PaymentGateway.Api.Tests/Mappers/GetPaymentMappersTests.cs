@@ -10,7 +10,6 @@ public class GetPaymentMappersTests : MapperTests
 {
     public GetPaymentMappersTests() : base(() => new GetPaymentMappers())
     {
-       
     }
 
     // [Fact]
@@ -26,14 +25,16 @@ public class GetPaymentMappersTests : MapperTests
 public abstract class MapperTests
 {
     protected readonly IMapper Sut;
+
     protected MapperTests(params Func<IRegister>[] mapperFactories)
     {
         var config = new TypeAdapterConfig { RequireDestinationMemberSource = true };
         foreach (var mapperFactory in mapperFactories)
         {
-            var mapper =  mapperFactory();
+            var mapper = mapperFactory();
             mapper.Register(config);
         }
+
         Sut = new Mapper(config);
     }
 

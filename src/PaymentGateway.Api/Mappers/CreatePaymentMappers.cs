@@ -17,7 +17,7 @@ public class CreatePaymentMappers : IRegister
         config.NewConfig<CreatePaymentRequest, PaymentRequestExternalDto>()
             .Map(dest => dest.ExpiryDate,
                 src => src.ToExpiryDate().ToString("MM/yyyy"));
-        
+
         // There are lots of uses of "!" and other mappings of nullable to non-nullable things. That's okay because
         // we'll only use this mapper after we've validated the inputs (we're not storing a Payment if it's rejected
         // for validation reasons)
@@ -37,6 +37,5 @@ public class CreatePaymentMappers : IRegister
             .Map(dest => dest.ExpiryMonth, src => src.CreateCommand.ExpiryMonth)
             .Map(dest => dest.Currency, src => src.CreateCommand.Currency)
             .Map(dest => dest.Amount, src => src.CreateCommand.Amount);
-
     }
 }

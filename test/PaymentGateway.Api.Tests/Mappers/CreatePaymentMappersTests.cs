@@ -1,7 +1,3 @@
-using Mapster;
-
-using MapsterMapper;
-
 using PaymentGateway.Api.Clients.Mountebank;
 using PaymentGateway.Api.Contracts;
 using PaymentGateway.Api.Mappers;
@@ -15,11 +11,7 @@ public class CreatePaymentMappersTests() : MapperTests(() => new CreatePaymentMa
     public void CreatePaymentRequest_Maps_To_PaymentRequestExternalDto_Correctly()
     {
         // Arrange
-        var request = new CreatePaymentRequest
-        {
-            ExpiryMonth = 2,
-            ExpiryYear = 2025
-        };
+        var request = new CreatePaymentRequest { ExpiryMonth = 2, ExpiryYear = 2025 };
 
         // Act
         var result = Sut.Map<PaymentRequestExternalDto>(request);
@@ -29,8 +21,8 @@ public class CreatePaymentMappersTests() : MapperTests(() => new CreatePaymentMa
         // we're not testing the rest of the properties because they're implicitly mapped
         // and would instead be picked up by Mapping_Is_Valid
     }
-    
-    
+
+
     [Fact]
     public void Tuple_Maps_To_Payment_Correctly_When_Payment_Authorized()
     {
@@ -62,8 +54,8 @@ public class CreatePaymentMappersTests() : MapperTests(() => new CreatePaymentMa
         result.Currency.Should().Be("USD");
         result.Amount.Should().Be(10050);
     }
-    
-    
+
+
     [Theory]
     [InlineData("")]
     [InlineData(null)]
@@ -85,7 +77,7 @@ public class CreatePaymentMappersTests() : MapperTests(() => new CreatePaymentMa
 
         // Act
         var result = Sut.Map<Payment>(tuple);
-        
+
         // Assert
         result.Should().NotBeNull();
         result.Status.Should().Be(PaymentStatus.Declined);

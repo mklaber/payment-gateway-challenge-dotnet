@@ -29,7 +29,7 @@ public class CreatePaymentRequestHandlerTests
         _client = Substitute.For<IMountebankClient>();
         _sut = new CreatePaymentRequestHandler(_validator, _mapper, _mediator, _client);
     }
-    
+
     [Fact]
     public async Task Handle_WhenValidationSucceeds_ReturnsSuccessResult()
     {
@@ -58,24 +58,22 @@ public class CreatePaymentRequestHandlerTests
         result.Should().NotBeNull();
         result.Success.Should().NotBeNull();
         result.Success.Should().Be(paymentDto);
-        
+
         await _validator.Received(1).ValidateAsync(request, Arg.Any<CancellationToken>());
         _mapper.Received(1).Map<PaymentRequestExternalDto>(request);
         await _client.Received(1).CreatePaymentAsync(externalDto, Arg.Any<CancellationToken>());
-        await _mediator.Received(1).Send(Arg.Is<AddPaymentRequest>(r => r.Payment == payment), Arg.Any<CancellationToken>());
+        await _mediator.Received(1)
+            .Send(Arg.Is<AddPaymentRequest>(r => r.Payment == payment), Arg.Any<CancellationToken>());
         _mapper.Received(1).Map<PaymentDto>(payment);
     }
-    
-    
+
+
     [Fact]
     public async Task Handle_WhenValidationFails_ReturnsFailureResult()
     {
         // Arrange
         var request = new CreatePaymentRequest();
-        var validationFailures = new List<ValidationFailure>
-        {
-            new("PropertyName", "Error Message")
-        };
+        var validationFailures = new List<ValidationFailure> { new("PropertyName", "Error Message") };
         var validationResult = new ValidationResult(validationFailures);
 
         _validator.ValidateAsync(request, Arg.Any<CancellationToken>())
@@ -89,10 +87,11 @@ public class CreatePaymentRequestHandlerTests
         result.Success.Should().BeNull();
         result.Failures.Should().NotBeNull();
         result.Failures.Should().ContainKey("PropertyName");
-        
+
         await _validator.Received(1).ValidateAsync(request, Arg.Any<CancellationToken>());
         _mapper.DidNotReceive().Map<PaymentRequestExternalDto>(Arg.Any<CreatePaymentRequest>());
-        await _client.DidNotReceiveWithAnyArgs().CreatePaymentAsync(Arg.Any<PaymentRequestExternalDto>(), Arg.Any<CancellationToken>());
+        await _client.DidNotReceiveWithAnyArgs()
+            .CreatePaymentAsync(Arg.Any<PaymentRequestExternalDto>(), Arg.Any<CancellationToken>());
         await _mediator.DidNotReceiveWithAnyArgs().Send(Arg.Any<IRequest>(), Arg.Any<CancellationToken>());
     }
 }

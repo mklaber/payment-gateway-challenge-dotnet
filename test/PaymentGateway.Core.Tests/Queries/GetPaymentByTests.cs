@@ -15,10 +15,10 @@ public class GetPaymentByTests
         var repo = Substitute.For<IPaymentsRepository>();
         repo.GetById(pay.PaymentId).Returns(pay);
         var sut = new GetPaymentByIdRequestHandler(repo);
-        
+
         // Act
         var result = await sut.Handle(request, CancellationToken.None);
-        
+
         // Assert
         result.Should().NotBeNull();
         result.PaymentId.Should().Be(pay.PaymentId);

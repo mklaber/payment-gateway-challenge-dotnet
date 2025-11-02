@@ -5,7 +5,6 @@ using PaymentGateway.Core.Models;
 
 namespace PaymentGateway.Api.Mappers;
 
-
 /// <summary>
 /// Mappers involved in getting existing payments
 /// </summary>

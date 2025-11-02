@@ -9,7 +9,7 @@
     }
   },
   "profiles": {
-    "PaymentGateway.Api - Launch": {
+    "PaymentGateway.Api.Swagger": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,
