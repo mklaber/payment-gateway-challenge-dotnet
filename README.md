@@ -43,7 +43,7 @@ The tl;dr of this solution's design:
 > 
 > There are a bunch of classes and namespaces and third-party libraries. It may look over-engineered. But, a vast majority of the code is boilerplate code that may look complicated but ultimately looks no different from most other .NET API you'll find. Other parts of code that look over-engineered aren't really engineering so much as being very particular about how it is presented to Merchants or to future engineers.
 > 
-> To get a clearer idea of where the actual engineering lies, look at `PaymentGateway.Api.Tests` and consider that (as of this writing) we've got 100% test coverage.
+> **To get a clearer idea of where the actual engineering lies, look at [`PaymentGateway.Api.Tests`][uts] and consider that (as of this writing) we've got 100% test coverage.**
 
 First, we're maintaining separate API "contracts" (an agreement with Merchants over what our API actually does, published as OpenAPI specs) from our actual data model. This allows us to accept and project data in an API friendly manner without mingling those concerns into our data layer. The overriding principle here is: do not expose your database model to the internet, and do not let the internet's needs muddy your database model. Contracts are in the `Contracts` namespace and are either requests or data transfer objects (DTO). The data model is in the `Models` namespace. We've added [Mapster][map][^am] to facilitate mapping between the two. (This same principal is used between our logic and the "contracts" of the Bank simulator's API.)
 
@@ -97,6 +97,7 @@ Copy the output of this command and save it for later. (If you forget to write t
 [sim-lh]: http://localhost:2525/
 [user-jwts]: https://learn.microsoft.com/en-us/aspnet/core/security/authentication/jwt-authn?view=aspnetcore-9.0&tabs=linux
 [smoke-t]: test/PaymentGateway.Api.IntegrationTests/README.md
+[uts]: test/PaymentGateway.Api.Tests/README.md
 
 ## Running
 
