@@ -4,12 +4,11 @@ using System.Text.Json.Serialization;
 using FluentValidation;
 
 using PaymentGateway.Api.Clients.Mountebank;
+using PaymentGateway.Api.Commands;
 using PaymentGateway.Api.Config;
 using PaymentGateway.Api.Filters;
 using PaymentGateway.Api.Identity;
-using PaymentGateway.Core.Commands;
-using PaymentGateway.Core.Identity;
-using PaymentGateway.Core.Repositories;
+using PaymentGateway.Api.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 

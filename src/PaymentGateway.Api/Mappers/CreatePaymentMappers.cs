@@ -2,8 +2,8 @@ using Mapster;
 
 using PaymentGateway.Api.Clients.Mountebank;
 using PaymentGateway.Api.Contracts;
+using PaymentGateway.Api.Models;
 using PaymentGateway.Api.Utilities;
-using PaymentGateway.Core.Models;
 
 namespace PaymentGateway.Api.Mappers;
 

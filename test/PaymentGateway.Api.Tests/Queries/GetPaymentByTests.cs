@@ -1,8 +1,8 @@
-using PaymentGateway.Core.Models;
-using PaymentGateway.Core.Queries;
-using PaymentGateway.Core.Repositories;
+using PaymentGateway.Api.Models;
+using PaymentGateway.Api.Queries;
+using PaymentGateway.Api.Repositories;
 
-namespace PaymentGateway.Core.Tests.Queries;
+namespace PaymentGateway.Api.Tests.Queries;
 
 public class GetPaymentByTests
 {

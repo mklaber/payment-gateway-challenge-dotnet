@@ -8,11 +8,11 @@ using MapsterMapper;
 using MediatR;
 
 using PaymentGateway.Api.Clients.Mountebank;
+using PaymentGateway.Api.Commands;
 using PaymentGateway.Api.Contracts;
 using PaymentGateway.Api.Handlers;
+using PaymentGateway.Api.Models;
 using PaymentGateway.Api.Results;
-using PaymentGateway.Core.Commands;
-using PaymentGateway.Core.Models;
 
 namespace PaymentGateway.Api.Tests.Handlers;
 

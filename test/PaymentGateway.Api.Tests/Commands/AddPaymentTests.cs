@@ -1,8 +1,8 @@
-using PaymentGateway.Core.Commands;
-using PaymentGateway.Core.Models;
-using PaymentGateway.Core.Repositories;
+using PaymentGateway.Api.Commands;
+using PaymentGateway.Api.Models;
+using PaymentGateway.Api.Repositories;
 
-namespace PaymentGateway.Core.Tests.Commands;
+namespace PaymentGateway.Api.Tests.Commands;
 
 public class AddPaymentTests
 {

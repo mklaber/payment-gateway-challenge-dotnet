@@ -4,8 +4,8 @@ using MediatR;
 
 using PaymentGateway.Api.Contracts;
 using PaymentGateway.Api.Handlers;
-using PaymentGateway.Core.Models;
-using PaymentGateway.Core.Queries;
+using PaymentGateway.Api.Models;
+using PaymentGateway.Api.Queries;
 
 namespace PaymentGateway.Api.Tests.Handlers;
 

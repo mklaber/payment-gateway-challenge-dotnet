@@ -1,7 +1,7 @@
 using Mapster;
 
 using PaymentGateway.Api.Contracts;
-using PaymentGateway.Core.Models;
+using PaymentGateway.Api.Models;
 
 namespace PaymentGateway.Api.Mappers;
 

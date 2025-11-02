@@ -1,5 +1,3 @@
-using PaymentGateway.Core.Identity;
-
 namespace PaymentGateway.Api.Identity;
 
 public class BearerMerchant(IHttpContextAccessor ctx) : IMerchant

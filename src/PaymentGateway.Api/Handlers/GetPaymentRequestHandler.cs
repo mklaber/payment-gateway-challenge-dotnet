@@ -3,7 +3,7 @@ using MapsterMapper;
 using MediatR;
 
 using PaymentGateway.Api.Contracts;
-using PaymentGateway.Core.Queries;
+using PaymentGateway.Api.Queries;
 
 namespace PaymentGateway.Api.Handlers;
 

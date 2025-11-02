@@ -1,9 +1,9 @@
 using MediatR;
 
-using PaymentGateway.Core.Models;
-using PaymentGateway.Core.Repositories;
+using PaymentGateway.Api.Models;
+using PaymentGateway.Api.Repositories;
 
-namespace PaymentGateway.Core.Commands;
+namespace PaymentGateway.Api.Commands;
 
 public record AddPaymentRequest(Payment Payment) : IRequest<bool>;
 

@@ -1,7 +1,7 @@
 using PaymentGateway.Api.Clients.Mountebank;
 using PaymentGateway.Api.Contracts;
 using PaymentGateway.Api.Mappers;
-using PaymentGateway.Core.Models;
+using PaymentGateway.Api.Models;
 
 namespace PaymentGateway.Api.Tests.Mappers;
 

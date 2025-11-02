@@ -7,8 +7,8 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 
 using PaymentGateway.Api.Contracts;
-using PaymentGateway.Core.Models;
-using PaymentGateway.Core.Repositories;
+using PaymentGateway.Api.Models;
+using PaymentGateway.Api.Repositories;
 
 namespace PaymentGateway.Api.IntegrationTests.UseCases;
 

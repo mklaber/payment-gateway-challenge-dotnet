@@ -1,9 +1,9 @@
 using MediatR;
 
-using PaymentGateway.Core.Models;
-using PaymentGateway.Core.Repositories;
+using PaymentGateway.Api.Models;
+using PaymentGateway.Api.Repositories;
 
-namespace PaymentGateway.Core.Queries;
+namespace PaymentGateway.Api.Queries;
 
 public record GetPaymentByIdRequest(Guid PaymentId) : IRequest<Payment?>;
 

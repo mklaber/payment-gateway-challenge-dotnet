@@ -1,10 +1,10 @@
 using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
 
-using PaymentGateway.Core.Identity;
-using PaymentGateway.Core.Models;
+using PaymentGateway.Api.Identity;
+using PaymentGateway.Api.Models;
 
-namespace PaymentGateway.Core.Repositories;
+namespace PaymentGateway.Api.Repositories;
 
 // Excluding this from code coverage because it's not a real implementation anyway
 /// <summary>

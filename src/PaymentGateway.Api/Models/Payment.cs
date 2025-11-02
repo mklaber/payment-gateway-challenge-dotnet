@@ -1,4 +1,4 @@
-namespace PaymentGateway.Core.Models;
+namespace PaymentGateway.Api.Models;
 
 /// <summary>
 /// A "Payment" is an attempt at creating a payment; it may or may not have been successful.
